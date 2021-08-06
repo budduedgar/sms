@@ -14,6 +14,7 @@ build/
 .project
 .settings/
 .vscode/
+.ccls-cache/
 bin/
 
 # Compiled class file
