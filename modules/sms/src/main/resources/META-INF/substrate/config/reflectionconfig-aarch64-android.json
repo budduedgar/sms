@@ -1,0 +1,11 @@
+[
+    {
+        "name": "org.jpereda.attach.sms.impl.AndroidSmsService",
+        "allDeclaredConstructors": true,
+        "allPublicConstructors": true,
+        "allDeclaredFields": true,
+        "allPublicFields": true,
+        "allDeclaredMethods": true,
+        "allPublicMethods": true
+    }
+]

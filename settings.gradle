@@ -10,6 +10,7 @@ pluginManagement {
 
 rootProject.name = 'custom-attach'
 
-include 'log'
+include 'log','sms'
 
 project(':log').projectDir                     = file('modules/log')
+project(':sms').projectDir                     = file('modules/sms')
