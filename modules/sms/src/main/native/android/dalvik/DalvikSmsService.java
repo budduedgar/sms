@@ -16,5 +16,5 @@ public class DalvikSmsService {
         processReceivedSms(phone, sms);
     }
     
-    private native static void processReceivedSms(String key, String value);
+    private static native void processReceivedSms(String key, String value);
 }

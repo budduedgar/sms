@@ -1,3 +1,6 @@
+/**
+ * gluon-javafx attach service for handling the sms.
+ */
 module org.jpereda.attach.sms {
 
     requires javafx.graphics;

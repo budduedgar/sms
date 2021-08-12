@@ -1,11 +1,9 @@
 [
     {
         "name": "org.jpereda.attach.sms.impl.AndroidSmsService",
-        "allDeclaredConstructors": true,
-        "allPublicConstructors": true,
-        "allDeclaredFields": true,
-        "allPublicFields": true,
-        "allDeclaredMethods": true,
-        "allPublicMethods": true
+        "methods":[
+            {"name":"<init>","parameterTypes":[]},
+            {"name":"receiveSms","parameterTypes":["java.lang.String","java.lang.String"]}
+        ]
     }
 ]

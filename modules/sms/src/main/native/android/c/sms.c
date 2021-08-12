@@ -2,20 +2,21 @@
 
 //Graal handles
 static jclass jGraalSmsClass;
-jmethodID jGraalReceiceSmsMethod;
+static jmethodID jGraalReceiceSmsMethod;
 
 static jclass jSmsServiceClass;
 
 static void initializeGraalHandles(JNIEnv* env) {
-    jGraalSmsClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "org/jpereda/attach/sms/impl/impl/AndroidSmsService"));
-    jGraalReceiceSmsMethod = (*env)->GetMethodID(env, jGraalSmsClass, "receiveSms", "(Ljava/lang/String;Ljava/lang/String;)V");
+    jGraalSmsClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "org/jpereda/attach/sms/impl/AndroidSmsService"));
+    jGraalReceiceSmsMethod = (*env)->GetStaticMethodID(env, jGraalSmsClass, "receiveSms", "(Ljava/lang/String;Ljava/lang/String;)V");
 }
 
-static void initializeDalvikHandles() {
+static void initializeDalvikHandles() {                             
     jSmsServiceClass = GET_REGISTER_DALVIK_CLASS(jSmsServiceClass, "com/gluonhq/helloandroid/DalvikSmsService");
     ATTACH_DALVIK();
     jmethodID jSmsServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jSmsServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jobject jActivity = substrateGetActivity();
+    
+    jclass jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jSmsServiceClass, jSmsServiceInitMethod, jActivity);
     jobject jDalvikSmsService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jtmpobj);
     DETACH_DALVIK();
@@ -23,7 +24,7 @@ static void initializeDalvikHandles() {
 //////////////////////////
 // From Graal to native //
 //////////////////////////
-JNIEXPORT jint JNICALL 
+JNIEXPORT jint JNICALL
 JNI_OnLoad_sms(JavaVM *vm, void *reserved)
 {
     ATTACH_LOG_INFO("JNI_OnLoad_sms called");
@@ -34,9 +35,7 @@ JNI_OnLoad_sms(JavaVM *vm, void *reserved)
         return JNI_FALSE;
     }
     ATTACH_LOG_FINE("[sms service] Initializing native Sms from OnLoad started");
-    ATTACH_LOG_FINE("[sms service] Initializing native graal handles started");
     initializeGraalHandles(graalEnv);
-    ATTACH_LOG_FINE("[sms service] Initializing native dalvik handles started");
     initializeDalvikHandles();
     ATTACH_LOG_FINE("[sms service] Initializing native Sms from OnLoad done");
     return JNI_VERSION_1_8;
@@ -44,12 +43,11 @@ JNI_OnLoad_sms(JavaVM *vm, void *reserved)
     #error Error: Java 8+ SDK is required to compile Attach
 #endif
 }
-
 ///////////////////////////
 // From Dalvik to native //
 ///////////////////////////
-JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikSmsService_processReceivedSms 
-(JNIEnv *env, jclass service, jstring jkey, jstring jvalue) 
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikSmsService_processReceivedSms
+(JNIEnv *env, jclass service, jstring jkey, jstring jvalue)
 {
     const char *keyChars = (*env)->GetStringUTFChars(env, jkey, NULL);
     const char *valueChars = (*env)->GetStringUTFChars(env, jvalue, NULL);
@@ -57,12 +55,13 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikSmsService_processRec
         ATTACH_LOG_FINE("[sms service] native layer got sms, key: %s, value: %s", keyChars, valueChars);
     }
     ATTACH_GRAAL();
-    ATTACH_LOG_FINE("[sms service] dalvik->native layer all got sms, key: %s, value: %s", keyChars, valueChars);
+    ATTACH_LOG_FINE("[sms service] call dalvik->native layer all got sms, key: %s, value: %s", keyChars, valueChars);
     jstring jKeyChars = (*graalEnv)->NewStringUTF(graalEnv, keyChars);
     jstring jValueChars = (*graalEnv)->NewStringUTF(graalEnv, valueChars);
-    (*graalEnv)->CallVoidMethod(graalEnv, jGraalSmsClass, jGraalReceiceSmsMethod, jKeyChars, jValueChars);
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalSmsClass, jGraalReceiceSmsMethod, jKeyChars, jValueChars);
     (*graalEnv)->DeleteLocalRef(graalEnv, jKeyChars);
     (*graalEnv)->DeleteLocalRef(graalEnv, jValueChars);
+    ATTACH_LOG_FINE("[sms service] done dalvik->native layer with the call back");
     DETACH_GRAAL();
     (*env)->ReleaseStringUTFChars(env, jkey, keyChars);
     (*env)->ReleaseStringUTFChars(env, jvalue, valueChars);

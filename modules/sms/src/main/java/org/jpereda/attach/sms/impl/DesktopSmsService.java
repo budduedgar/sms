@@ -4,7 +4,10 @@ import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import org.jpereda.attach.sms.Message;
 import org.jpereda.attach.sms.SmsService;
-
+/**
+ * Desktop implementation of the sms service provider
+ * @author edgar
+ */
 public class DesktopSmsService implements SmsService {
 
     private static final Logger LOG = Logger.getLogger(DesktopSmsService.class.getName());

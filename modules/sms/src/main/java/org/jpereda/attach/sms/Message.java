@@ -1,22 +1,36 @@
 package org.jpereda.attach.sms;
 
-import java.time.ZonedDateTime;
-
+/**
+ * sms data transfer 
+ * @author edgar
+ */
 public class Message {
 
-    private final String phone;
-    private final String sms;
-
+    private String phone;
+    private String sms;
+    
+    /**
+     * sms message constructor
+     * @param phone contact of the sender
+     * @param sms messsage body contents
+     */
     public Message(String phone, String sms) {
         this.phone = phone;
         this.sms = sms;
     }
-
-    public final String getPhone() {
+    /**
+     * get the phone 
+     * @return sms phone 
+     */
+    public String getPhone() {
         return phone;
     }
-
-    public final String getSms() {
+    
+    /**
+     * get the sms 
+     * @return sms body
+     */
+    public String getSms() {
         return sms;
     }
 
